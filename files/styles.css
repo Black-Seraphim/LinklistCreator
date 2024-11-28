@@ -1,0 +1,177 @@
+@font-face {
+    font-family: 'Roboto';
+    src: url(../font/Roboto-Medium.ttf) format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+	box-sizing: border-box;
+}
+
+html {
+	font-size: 6.25%;
+}
+
+body {
+	color: var(--link-text-color);
+	background-color: var(--main-bg-color);
+    padding: 0;
+	font-family: 'Roboto', sans-serif;
+    font-weight: normal;
+    font-style: normal;
+	font-size: calc(var(--tile-width) * 0.11);
+}
+
+a:link,
+a:visited,
+a:active {
+    color: var(--link-text-color);
+    text-decoration: none;
+}
+
+.tile {
+	width: var(--tile-width);
+	margin: 25rem 0 0 25rem;
+	border-radius: calc(var(--tile-width) * 0.05);
+    box-shadow: 0 2rem 1rem -1rem var(--tile-shadow-color-1), 0 1rem 1rem 0 var(--tile-shadow-color-2), 0 1rem 3rem 0 var(--tile-shadow-color-3);
+	transition: box-shadow .2s ease-out;
+	float: left;
+
+	> a {
+		div:first-child {
+			display: flex;
+			justify-content: center;
+    		align-items: center;
+			border-radius: calc(var(--tile-width) * 0.05) calc(var(--tile-width) * 0.05) 0 0;
+			width: var(--tile-width);
+			aspect-ratio: 2 / 1.5;
+			padding: calc(var(--tile-width) * 0.05);
+			background-color: var(--tile-bg-color);
+			
+			> img {
+				max-width: 100%;
+    			max-height: 100%;
+    			object-fit: contain;
+			}
+		}
+	}
+
+	&:hover {
+		box-shadow: 0 0 5rem var(--tile-shadow-color-hover);
+		> a{
+			div:first-child {
+				transition: background-color .2s ease-out;
+				background-color: var(--tile-bg-hover-color);
+			}
+		}
+	}
+}
+
+.single {
+	> a {
+		div:last-child{
+			display: flex;
+			justify-content: center;
+    		align-items: center;
+			border-radius: 0 0 calc(var(--tile-width) * 0.05) calc(var(--tile-width) * 0.05);
+			width: var(--tile-width);
+			aspect-ratio: 2 / 0.5;
+			background-color: var(--link-bg-color);
+		}
+	}
+}
+
+.multi {
+	> div {
+		height: calc(var(--tile-width) * 0.25);
+
+		.link {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			border-radius: 0 0 0 calc(var(--tile-width) * 0.05);
+			width: calc(var(--tile-width) * 0.75);
+			aspect-ratio: 1.5 / 0.5;
+			background-color: var(--link-bg-color);
+			float: left;
+		}
+
+		.button {
+			border-radius: 0 0 calc(var(--tile-width) * 0.05) 0;
+			width: calc(var(--tile-width) * 0.25);
+			aspect-ratio: 1;
+			background-color: var(--button-bg-color);
+			display: inline-flex;
+			justify-content: center;
+			align-items: center;
+
+			> i{
+				border-style: solid;
+				border-color: var(--link-text-color);
+				border-width: 0 calc(var(--tile-width) * 0.025) calc(var(--tile-width) * 0.025) 0;
+				display: inline-block;
+				padding: calc(var(--tile-width) * (3 / 100));
+				transform: rotate(45deg);
+				position: relative;
+				top: calc(var(--tile-width) * -0.01);
+			}
+		}
+
+		.dropdown {
+			visibility: hidden;
+			opacity: 0;
+			box-shadow: 0 2rem 1rem -1rem var(--tile-shadow-color-1), 0 1rem 1rem 0 var(--tile-shadow-color-2), 0 1rem 3rem 0 var(--tile-shadow-color-3);
+			position: relative;
+			top: calc(var(--tile-width) * -0.25);
+			border-radius: 0 0 calc(var(--tile-width) * 0.05) calc(var(--tile-width) * 0.05);
+
+			> ul {
+
+				> li {
+					width: var(--tile-width);
+					height: 0;
+					position: relative;
+					background-color: var(--link-bg-color);
+					transition: height .3s ease-out;
+					display: flex;
+
+					> a {
+						width: var(--tile-width);
+						aspect-ratio: 1 / 4;
+						display: flex;
+						justify-content: center;
+						align-items: center;
+					}
+
+					&:hover {
+						background-color: var(--link-bg-hover-color);
+					}
+
+					&:first-child {
+						height: calc(var(--tile-width) * 0.25);
+					}
+
+					&:last-of-type{
+						border-radius: 0 0 calc(var(--tile-width) * 0.05) calc(var(--tile-width) * 0.05);
+					}
+				}
+			}
+		}
+
+		&:hover {
+			.dropdown {
+				opacity: 1;
+				visibility: visible;
+				box-shadow: 0 0 5rem var(--tile-shadow-color-hover);
+				transition: box-shadow .2s ease-out;
+				
+				> ul > li {
+					height: calc(var(--tile-width) * 0.25);
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Linklist</title>
+	<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+
+<body>
+
+	<main>
+		<button class="button-nav">
+			<span></span>
+			<span></span>
+			<span></span>
+		</button>
+
+		<nav>
+			<div>
+				<h2>Actions</h2>
+			</div>
+
+			<button>Load Preset...</button>
+			<button>Save Preset...</button>
+			<button>Create Page...</button>
+		</nav>
+
+		<div class="menu tiles">
+			<div class="title">
+				<h2>Tiles</h2>
+			</div>
+			<div class="table">
+				<table>
+					<tr>
+						<td>Search</td>
+					</tr>
+					<tr>
+						<td>Streaming</td>
+					</tr>
+				</table>
+			</div>
+
+			<div class="buttons">
+				<button>Remove</button>
+				<button>Add</button>
+			</div>
+
+		</div>
+
+		<div class="menu links">
+			<div class="title">
+				<h2>Links</h2>
+			</div>
+			<div class="table">
+				<table>
+					<tr>
+						<td>Netflix</td>
+					</tr>
+					<tr>
+						<td>Amazon</td>
+					</tr>
+					<tr>
+						<td>Disney</td>
+					</tr>
+				</table>
+			</div>
+
+			<div class="buttons">
+				<button>Remove</button>
+				<button>Add</button>
+			</div>
+
+		</div>
+
+		<div class="menu tile-options">
+			<div class="title">
+				<h2>Tile Options</h2>
+			</div>
+
+			<div class="options">
+				<div class="input-text">
+					<label for="tile-name">Name</label>
+					<input id="tile-name" type="text" />
+				</div>
+	
+				<div class="input-text">
+					<label>Url</label>
+					<input type="text" />
+				</div>
+	
+				<div class="input-dropdown">
+					<label>Type</label>
+					<select>
+						<option>Single</option>
+						<option>Multi</option>
+					</select>
+				</div>
+	
+				<div class="input-file">
+					<label>Image</label>
+					<div>
+						<input type="text" />
+						<button>...</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="buttons">
+				<button>Save</button>
+			</div>
+		</div>
+
+		<div class="menu link-options">
+			<div class="title">
+				<h2>Link Options</h2>
+			</div>
+
+			<div class="options">
+				<div class="input-text">
+					<label>Name</label>
+					<input type="text" />
+				</div>
+	
+				<div class="input-text">
+					<label>Url</label>
+					<input type="text" />
+				</div>
+			</div>
+			
+			<div class="buttons">
+				<button>Save</button>
+			</div>
+		</div>
+
+		<div class="menu design-options">
+			<div class="title">
+				<h2>Design Options</h2>
+			</div>
+
+			<div class="options">
+				<div class="color-picker">
+					<label>Background Color 1</label>
+					<button></button>
+				</div>
+				<div class="color-picker">
+					<label>Background Color 2</label>
+					<button></button>
+				</div>
+				<div class="color-picker">
+					<label>Background Color 3</label>
+					<button></button>
+				</div>
+				<div class="color-picker">
+					<label>Background Color 4</label>
+					<button></button>
+				</div>
+				<div class="color-picker">
+					<label>Background Color 5</label>
+					<button></button>
+				</div>
+				<div class="color-picker">
+					<label>Background Color 6</label>
+					<button></button>
+				</div>
+				<div class="color-picker">
+					<label>Text Color</label>
+					<button></button>
+				</div>
+				<div class="input-width">
+					<label>Tile Width</label>
+					<input type="text" />
+					<label>px</label>
+				</div>
+	
+				<div class="tile-visualization">
+					<div class="tile">
+						<a href="#">
+							<div><img src="src/img/phoenix.png" alt="Phoenix"></div>
+						</a>
+
+						<div onclick="">
+							<div class="link">
+								<span>Link</span>
+							</div>
+
+							<div class="button">
+								<i></i>
+							</div>
+
+							<div class="dropdown">
+								<ul>
+									<li><a href="#"><span>Link 1</span></a></li>
+									<li><a href="#"><span>Link 2</span></a></li>
+									<li><a href="#"><span>Link 3</span></a></li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+	
+			</div>
+		
+			<div class="buttons">
+				<button>Save</button>
+			</div>
+		</div>
+
+
+	</main>
+
+
+
+
+</body>
+
+</html>

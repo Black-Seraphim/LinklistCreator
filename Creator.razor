@@ -1,0 +1,259 @@
+﻿@using LinkListCreator.Model
+@using Microsoft.AspNetCore.Components.Forms
+
+<main>
+    <button class="button-nav" @onclick="ButtonMenu_OnClick">
+        @if (MenuVisibility == "hidden")
+        {
+            <span></span>
+            <span></span>
+            <span></span>
+        }
+        else{
+            <div>X</div>
+        }
+      
+    </button>
+
+    <nav class="@MenuVisibility">
+        <div>
+            <h2>Actions</h2>
+        </div>
+
+        <button @onclick="ButtonLoad_OnClickAsync">Load Preset...</button>
+        <button @onclick="ButtonSave_OnClick">Save Preset...</button>
+        <button @onclick="ButtonCreate_OnClick">Create Page...</button>
+    </nav>
+
+
+    <div class="menu tiles">
+        <div class="title">
+            <div>Tiles</div>
+        </div>
+        <div class="table">
+            <table>
+                <tbody>
+                    @if (Tiles != null)
+                    {
+                        @foreach (Tile tile in Tiles)
+                        {
+                            <tr class="@((tile == SelectedTile) ? "row-selected" : "")" @onclick="() => SelectTile(tile)"><td>@tile.Title</td></tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="buttons">
+            @if (SelectedTile != null)
+            {
+                <button @onclick="RemoveTile">Remove</button>
+            }
+            <button @onclick="AddTile">Add</button>
+        </div>
+    </div>
+
+    <div class="menu links">
+        <div class="title">
+            <div>Links</div>
+        </div>
+        @if (SelectedTile != null && SelectedTile.Type != TileType.Single)
+        {
+            <div class="table">
+                <table>
+                    <tbody>
+                        @if (Links != null)
+                        {
+                            @foreach (Link link in Links)
+                            {
+                                <tr class="@((link == SelectedLink) ? "row-selected" : "")" @onclick="() => SelectLink(link)"><td>@link.Title</td></tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="buttons">
+                @if (SelectedLink != null)
+                {
+                    <button @onclick="RemoveLink">Remove</button>
+                }
+
+                <button @onclick="AddLink">Add</button>
+
+            </div>
+        }
+    </div>
+
+    <div class="menu tile-options @TileOptionsVisibility">
+        <div class="title">
+            <div>Tile Options</div>
+        </div>
+        @if (SelectedTile != null)
+        {
+            <div class="options">
+                <div class="input-text">
+                    <label for="tile-name">Name</label>
+                    <input id="tile-name" type="text" @bind="SelectedTile.Title" />
+                </div>
+
+                <div class="input-text">
+                    <label for="tile-url">Url</label>
+                    <input id="tile-url" type="text" @bind="SelectedTile.Url" />
+                </div>
+
+                <div class="input-dropdown">
+                    <label for="tile-type">Type</label>
+                    <select id="tile-type" @bind="SelectedTile.Type">
+                        <option>Single</option>
+                        <option>Multi</option>
+                    </select>
+                </div>
+
+                <div class="input-file">
+                    <label>Image</label>
+                    <InputFile id="fileInput" class="file-input" OnChange="OnFileSelected" />
+
+                </div>
+
+                <div class="input-checkbox">
+                    <label for="border-radius">Add Border Radius</label>
+                    <input id="border-radius" type="checkbox" @bind="SelectedTile.BorderRadiusActive" />
+                </div>
+
+                @if (SelectedTile.BorderRadiusActive)
+                {
+                    <div class="input-radius">
+                        <label>Border Radius</label>
+                        <input type="text" @bind="SelectedTile.BorderRadiusPercentage" />
+                        <label>%</label>
+
+                    </div>
+                }
+            </div>
+        }
+
+    </div>
+
+    <div class="menu link-options @LinkOptionsVisibility">
+        <div class="title">
+            <div>Link Options</div>
+        </div>
+
+        @if (SelectedLink != null)
+        {
+            <div class="options">
+                <div class="input-text">
+                    <label for="link-name">Name</label>
+                    <input id="link-name" type="text" @bind="SelectedLink.Title" />
+                </div>
+
+                <div class="input-text">
+                    <label for="link-url">Url</label>
+                    <input id="link-url" type="text" @bind="SelectedLink.Url" />
+                </div>
+            </div>
+        }
+
+    </div>
+
+    <div class="menu design-options">
+        <div class="title">
+            <div>Design Options</div>
+        </div>
+
+        <div class="options">
+            <div class="input-text">
+                <label for="tile-name">List Name</label>
+                <input id="tile-name" type="text" @bind="Settings.LinklistName" />
+            </div>
+            <div class="color-picker">
+                <label>Main Background Color</label>
+                <label for="color-picker-1" class="color-button" style="background-color: @Settings.SelectedMainBgColor"></label>
+                <input id="color-picker-1" type="color" @onchange="@((e) => UpdateCssVariables("--main-bg-color", e))" />
+            </div>
+            <div class="color-picker">
+                <label>Tile Background Color</label>
+                <label for="color-picker-2" class="color-button" style="background-color: @Settings.SelectedTileBgColor"></label>
+                <input id="color-picker-2" type="color" @onchange="@((e) => UpdateCssVariables("--tile-bg-color", e))" />
+            </div>
+            <div class="color-picker">
+                <label>Tile Hover Background Color</label>
+                <label for="color-picker-3" class="color-button" style="background-color: @Settings.SelectedTileBgHoverColor"></label>
+                <input id="color-picker-3" type="color" @onchange="@((e) => UpdateCssVariables("--tile-bg-hover-color", e))" />
+            </div>
+            <div class="color-picker">
+                <label>Link Background Color</label>
+                <label for="color-picker-4" class="color-button" style="background-color: @Settings.SelectedLinkBgColor"></label>
+                <input id="color-picker-4" type="color" @onchange="@((e) => UpdateCssVariables("--link-bg-color", e))" />
+            </div>
+            <div class="color-picker">
+                <label>Link Hover Background Color</label>
+                <label for="color-picker-5" class="color-button" style="background-color: @Settings.SelectedLinkBgHoverColor"></label>
+                <input id="color-picker-5" type="color" @onchange="@((e) => UpdateCssVariables("--link-bg-hover-color", e))" />
+            </div>
+            <div class="color-picker">
+                <label>Dropdown Button Color</label>
+                <label for="color-picker-6" class="color-button" style="background-color: @Settings.SelectedButtonBgColor"></label>
+                <input id="color-picker-6" type="color" @onchange="@((e) => UpdateCssVariables("--button-bg-color", e))" />
+            </div>
+            <div class="color-picker">
+                <label>Text Color</label>
+                <label for="color-picker-7" class="color-button" style="background-color: @Settings.SelectedLinkTextColor"></label>
+                <input id="color-picker-7" type="color" @onchange="@((e) => UpdateCssVariables("--link-text-color", e))" />
+            </div>
+            <div class="input-width">
+                <label>Tile Width</label>
+                <input type="text" @bind="Settings.TileWidthPx" />
+                <label>px</label>
+            </div>
+
+            <div class="tile-visualization">
+                <div class="tile">
+                    <a href="#">
+                        <div>
+                            @if (SelectedTile == null)
+                            {
+                                <img src="@GetTileImage()" alt="Phoenix">
+                            }
+                            else
+                            {
+                                <img style="@(SelectedTile.BorderRadiusActive ? $"border-radius: {SelectedTile.BorderRadiusPercentage}%;" : "")" src="@GetTileImage()" alt="Phoenix">
+
+                            }
+                        </div>
+                    </a>
+
+                    <div onclick="">
+                        <div class="link">
+                            <span>Link</span>
+                        </div>
+
+                        <div class="button">
+                            <i></i>
+                        </div>
+
+                        <div class="dropdown">
+                            <ul>
+                                <li><a href="#"><span>Link 1</span></a></li>
+                                <li><a href="#"><span>Link 2</span></a></li>
+                                <li><a href="#"><span>Link 3</span></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+</main>
+
+
+
+@code {
+
+
+}
