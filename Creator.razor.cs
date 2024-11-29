@@ -33,6 +33,10 @@ namespace LinkListCreator
         [Inject]
         private IFileDialogService FileDialogService { get; set; } = default!;
 
+        [Inject]
+        private FileUploadService FileUploadService { get; set; } = default!;
+
+        public Settings Settings { get; set; } = new();
         public List<Tile> Tiles { get; set; } = new();
         public List<Link> Links { get; set; } = new();
         public Tile? SelectedTile { get; set; }
@@ -45,43 +49,94 @@ namespace LinkListCreator
         public string AddLinkVisibility { get; set; } = "hidden";
         public string MenuVisibility { get; set; } = "hidden";
 
-        public Settings Settings { get; set; } = new();
-
 
         private ElementReference? InputFileRef { get; set; }
         private IBrowserFile? SelectedFile { get; set; }
-        [Inject]
-        private FileUploadService FileUploadService { get; set; } = default!;
 
-        private async Task OnFileSelected(InputFileChangeEventArgs e)
+        protected override void OnInitialized()
         {
-            SelectedFile = e.File;
+            base.OnInitialized();
 
-            if (SelectedFile == null) return;
+            Tiles = Seed.SeedTiles();
+        }
 
-            if (SelectedTile == null) return;
+        /// <summary>
+        /// Update the CSS variable in settings and browser.
+        /// </summary>
+        /// <param name="value">css value name to update</param>
+        /// <param name="e">event that contains the updated value</param>
+        /// <returns></returns>
+        private async Task UpdateCssVariable(string value, ChangeEventArgs e)
+        {
+            if (e.Value == null) { return; }
 
-            try
+            switch (value)
             {
-                string fileName = $"{SelectedFile.Name}";
-                await FileUploadService.SaveFileAsync(SelectedFile, fileName);
-                SelectedTile.ImageUrl = fileName;
-            }
-            catch (Exception)
-            {
-
+                case "--main-bg-color":
+                    Settings.SelectedMainBgColor = e.Value.ToString();
+                    await JSRuntime.InvokeVoidAsync("updateCssVariable", "--main-bg-color", Settings.SelectedMainBgColor);
+                    break;
+                case "--tile-bg-color":
+                    Settings.SelectedTileBgColor = e.Value.ToString();
+                    await JSRuntime.InvokeVoidAsync("updateCssVariable", "--tile-bg-color", Settings.SelectedTileBgColor);
+                    break;
+                case "--tile-bg-hover-color":
+                    Settings.SelectedTileBgHoverColor = e.Value.ToString();
+                    await JSRuntime.InvokeVoidAsync("updateCssVariable", "--tile-bg-hover-color", Settings.SelectedTileBgHoverColor);
+                    break;
+                case "--link-bg-color":
+                    Settings.SelectedLinkBgColor = e.Value.ToString();
+                    await JSRuntime.InvokeVoidAsync("updateCssVariable", "--link-bg-color", Settings.SelectedLinkBgColor);
+                    break;
+                case "--link-bg-hover-color":
+                    Settings.SelectedLinkBgHoverColor = e.Value.ToString();
+                    await JSRuntime.InvokeVoidAsync("updateCssVariable", "--link-bg-hover-color", Settings.SelectedLinkBgHoverColor);
+                    break;
+                case "--button-bg-color":
+                    Settings.SelectedButtonBgColor = e.Value.ToString();
+                    await JSRuntime.InvokeVoidAsync("updateCssVariable", "--button-bg-color", Settings.SelectedButtonBgColor);
+                    break;
+                case "--link-text-color":
+                    Settings.SelectedLinkTextColor = e.Value.ToString();
+                    await JSRuntime.InvokeVoidAsync("updateCssVariable", "--link-text-color", Settings.SelectedLinkTextColor);
+                    break;
+                default:
+                    break;
             }
         }
 
+        /// <summary>
+        /// Refresh all CSS variables in the browser.
+        /// </summary>
+        /// <returns></returns>
+        private async Task RefreshCssVariables()
+        {
+            await JSRuntime.InvokeVoidAsync("updateCssVariable", "--main-bg-color", Settings.SelectedMainBgColor);
+            await JSRuntime.InvokeVoidAsync("updateCssVariable", "--tile-bg-color", Settings.SelectedTileBgColor);
+            await JSRuntime.InvokeVoidAsync("updateCssVariable", "--tile-bg-hover-color", Settings.SelectedTileBgHoverColor);
+            await JSRuntime.InvokeVoidAsync("updateCssVariable", "--link-bg-color", Settings.SelectedLinkBgColor);
+            await JSRuntime.InvokeVoidAsync("updateCssVariable", "--link-bg-hover-color", Settings.SelectedLinkBgHoverColor);
+            await JSRuntime.InvokeVoidAsync("updateCssVariable", "--button-bg-color", Settings.SelectedButtonBgColor);
+            await JSRuntime.InvokeVoidAsync("updateCssVariable", "--link-text-color", Settings.SelectedLinkTextColor);
+        }
+
+        /// <summary>
+        /// On button click, visibility of the menu is toggled.
+        /// </summary>
         public void ButtonMenu_OnClick()
         {
             MenuVisibility = (MenuVisibility == "hidden") ? "visible" : "hidden";
         }
 
+        /// <summary>
+        /// On button click, a file dialog is opened to load a linklist.
+        /// After loading the linklist, all tiles and settings are updated.
+        /// Also, the CSS variables are updated in the browser.
+        /// Menu is closed after loading the linklist.
+        /// </summary>
+        /// <returns></returns>
         public async Task ButtonLoad_OnClickAsync()
         {
-            MenuVisibility = "hidden";
-
             LinkList? linkList = LoadLinkList();
 
             if (linkList == null) { return; }
@@ -89,38 +144,15 @@ namespace LinkListCreator
             Tiles = linkList.Tiles;
             Settings = linkList.Settings;
 
-            await UpdateAllCssVariables();
-        }
+            await RefreshCssVariables();
 
-        public void ButtonSave_OnClick()
-        {
             MenuVisibility = "hidden";
-
-            LinkList linkList = new()
-            {
-                Tiles = Tiles,
-                Settings = Settings
-            };
-
-            StoreLinkList(linkList);
         }
 
         /// <summary>
-        /// Store the link list as a JSON file.
-        /// Open a file dialog to save the file.
+        /// Open a file dialog to load and deserialize a linklist-json.
         /// </summary>
-        /// <param name="linkList">Linklist to save</param>
-        private void StoreLinkList(LinkList linkList)
-        {
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            string json = JsonSerializer.Serialize(linkList, options);
-
-            string? filePath = FileDialogService.GetSaveFilePath($"{Settings.LinklistName.ToLower()}.linklist");
-
-            if (filePath == null) { return; }
-            File.WriteAllText(filePath, json);
-        }
-
+        /// <returns></returns>
         private LinkList? LoadLinkList()
         {
             string? filePath = FileDialogService.GetOpenFilePath();
@@ -134,55 +166,135 @@ namespace LinkListCreator
             return linkList;
         }
 
-
-        public void ButtonCreate_OnClick()
+        /// <summary>
+        /// On button click, the linklist is saved in JSON format.
+        /// Menu is closed after saving the linklist.
+        /// </summary>
+        public void ButtonSave_OnClick()
         {
+            LinkList linkList = new()
+            {
+                Tiles = Tiles,
+                Settings = Settings
+            };
+
+            StoreLinkList(linkList);
+
             MenuVisibility = "hidden";
-
-            string linklistHtml = CreateHtmlLinklist();
-
-            linklistHtml = PrettifyHtml(linklistHtml);
-
-            string? linklistCss = CreateCssLinklist();
-
-            linklistCss = PrettifyCss(linklistCss);
-
-            if (linklistCss == null) { return; }
-
-            StoreFiles(linklistHtml, linklistCss);
-
-            CreatePackage();
-
-            Process.Start("explorer.exe", Path.Combine(AppContext.BaseDirectory, "Linklists", Settings.LinklistName));
         }
 
-        private void StoreFiles(string linklistHtml, string linklistCss)
+        /// <summary>
+        /// Store the linklist as a JSON file.
+        /// Therefore, a file dialog is opened to choose the file location.
+        /// </summary>
+        /// <param name="linkList">linklist to be safed as JSON</param>
+        private void StoreLinkList(LinkList linkList)
         {
+            JsonSerializerOptions options = new() { WriteIndented = true };
+            string json = JsonSerializer.Serialize(linkList, options);
+
+            string? filePath = FileDialogService.GetSaveFilePath($"{Settings.LinklistName.ToLower()}.linklist");
+
+            if (filePath == null) { return; }
+
+            File.WriteAllText(filePath, json);
+        }
+
+        /// <summary>
+        /// On button click, the linklist is created and stored in a zip package.
+        /// After storing the linklist, the linklist folder is opened in the explorer.
+        /// Menu is closed after creating the linklist.
+        /// </summary>
+        public void ButtonCreate_OnClick()
+        {
+            StoreFiles();
+
+            CreateLinklistZipPackage();
+
+            Process.Start("explorer.exe", Path.Combine(AppContext.BaseDirectory, "Linklists", Settings.LinklistName));
+
+            MenuVisibility = "hidden";
+        }
+
+        /// <summary>
+        /// Store all necessary files for the linklist.
+        /// </summary>
+        private void StoreFiles()
+        {
+            StoreLinklistHtml();
+
+            StoreLinklistCss();
+
+            StoreDefaultCss();
+
+            StoreDefaultFonts();
+
+            StoreImages();
+        }
+
+        /// <summary>
+        /// Create and prettify the HTML string for the linklist.
+        /// Then, store the HTML file in the linklist folder.
+        /// </summary>
+        private void StoreLinklistHtml()
+        {
+            string linklistHtml = CreateHtmlLinklist();
+            linklistHtml = Prettify.PrettifyHtml(linklistHtml);
+
             string htmlPath = Path.Combine("Linklists", Settings.LinklistName);
             Directory.CreateDirectory(htmlPath);
             string htmlFile = Path.Combine(htmlPath, "index.html");
             File.WriteAllText(htmlFile, linklistHtml);
+        }
+
+        /// <summary>
+        /// Create and prettify the CSS string for the linklist.
+        /// Then, store the CSS file in the linklist folder.
+        /// </summary>
+        private void StoreLinklistCss()
+        {
+            string linklistCss = CreateCssLinklist();
+            linklistCss = Prettify.PrettifyCss(linklistCss);
 
             string cssPath = Path.Combine("Linklists", Settings.LinklistName, "css");
             Directory.CreateDirectory(cssPath);
-            string cssFile = Path.Combine(cssPath, "linklist.css");
+            string cssFile = Path.Combine(cssPath, $"{Settings.LinklistName.ToLower()}.css");
             File.WriteAllText(cssFile, linklistCss);
+        }
 
+        /// <summary>
+        /// Store the default CSS file in the linklist folder.
+        /// </summary>
+        private void StoreDefaultCss()
+        {
             File.Copy("files/styles.css", Path.Combine("Linklists", Settings.LinklistName, "css", "styles.css"), true);
+        }
 
+        /// <summary>
+        /// Store the default fonts in the linklist folder.
+        /// </summary>
+        private void StoreDefaultFonts()
+        {
             string fontPath = Path.Combine("Linklists", Settings.LinklistName, "font");
             Directory.CreateDirectory(fontPath);
             File.Copy("files/Roboto-Medium.ttf", Path.Combine(fontPath, "Roboto-Medium.ttf"), true);
-
-            CopyImages();
         }
 
-        private void CopyImages()
+        /// <summary>
+        /// Store the images for each tile in the linklist folder.
+        /// If no image is set, a default image is used.
+        /// If the image does not exist, it is skipped.
+        /// </summary>
+        private void StoreImages()
         {
             string imagePath = Path.Combine("Linklists", Settings.LinklistName, "img");
             string sourcePath = Path.Combine("wwwroot", "images");
 
-            if (!Directory.Exists(imagePath)) { Directory.CreateDirectory(imagePath); }
+            if (!Directory.Exists(imagePath)) 
+            { 
+                Directory.CreateDirectory(imagePath); 
+            }
+
             foreach (Tile tile in Tiles)
             {
                 string fileName = tile.ImageUrl;
@@ -198,42 +310,28 @@ namespace LinkListCreator
                 if (!File.Exists(sourceFilePath)) { continue; }
 
                 File.Copy(sourceFilePath, targetFilePath, true);
-
             }
         }
 
-        private void CreatePackage()
+        /// <summary>
+        /// Create a zip package for the linklist folder.
+        /// </summary>
+        private void CreateLinklistZipPackage()
         {
-            string linklistName = "Linklist";
-
-            string zipPath = Path.Combine("Linklists", "linklist.zip");
-            string sourcePath = Path.Combine("Linklists", linklistName);
+            string zipPath = Path.Combine("Linklists", $"{Settings.LinklistName}.zip");
+            string sourcePath = Path.Combine("Linklists", Settings.LinklistName);
 
             if (File.Exists(zipPath)) { File.Delete(zipPath); }
 
-            using var archive = ZipFile.Open(zipPath, ZipArchiveMode.Create);
+            using ZipArchive archive = ZipFile.Open(zipPath, ZipArchiveMode.Create);
 
             archive.CreateEntry(sourcePath);
         }
 
-        public string PrettifyHtml(string html)
-        {
-            var parser = new HtmlParser();
-            var document = parser.ParseDocument(html);
-            var sw = new StringWriter();
-            document.ToHtml(sw, new PrettyMarkupFormatter());
-            return sw.ToString();
-        }
-
-        public string? PrettifyCss(string css)
-        {
-            var parser = new CssParser();
-            var stylesheet = parser.ParseStyleSheet(css);
-            var sw = new StringWriter();
-            stylesheet.ToCss(sw, new PrettyStyleFormatter());
-            return sw.ToString();
-        }
-
+        /// <summary>
+        /// Create the CSS string for the linklist.
+        /// </summary>
+        /// <returns></returns>
         private string CreateCssLinklist()
         {
             CultureInfo cultureInfo = CultureInfo.InvariantCulture;
@@ -249,11 +347,14 @@ namespace LinkListCreator
             cssBuilder.AppendLine($"--link-bg-hover-color: {Settings.SelectedLinkBgHoverColor};");
             cssBuilder.AppendLine($"--button-bg-color: {Settings.SelectedButtonBgColor};");
             cssBuilder.AppendLine($"--tile-width: {Settings.TileWidthPx}rem;");
+            cssBuilder.AppendLine($"");
 
             cssBuilder.AppendLine($"--tile-shadow-color-hover: #000000;");
             cssBuilder.AppendLine($"--tile-shadow-color-1: rgba(0, 0, 0, 0.3);");
             cssBuilder.AppendLine($"--tile-shadow-color-2: rgba(0, 0, 0, 0.36);");
             cssBuilder.AppendLine($"--tile-shadow-color-3: rgba(0, 0, 0, 0.38);");
+            cssBuilder.AppendLine($"}}");
+            cssBuilder.AppendLine($"");
 
             cssBuilder.AppendLine($"@media (max-width: 100em){{");
             cssBuilder.AppendLine($"body{{");
@@ -272,10 +373,6 @@ namespace LinkListCreator
             cssBuilder.AppendLine($"--tile-width: {(Settings.TileWidthPx * 0.575).ToString(cultureInfo)}rem;");
             cssBuilder.AppendLine($"}}");
             cssBuilder.AppendLine($"}}");
-
-
-            cssBuilder.AppendLine($"}}");
-            cssBuilder.AppendLine($"");
 
             foreach (Tile tile in Tiles)
             {
@@ -331,6 +428,51 @@ namespace LinkListCreator
             return htmlBuilder.ToString();
         }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        private async Task OnFileSelected(InputFileChangeEventArgs e)
+        {
+            SelectedFile = e.File;
+
+            if (SelectedFile == null) return;
+
+            if (SelectedTile == null) return;
+
+            try
+            {
+                string fileName = $"{SelectedFile.Name}";
+                await FileUploadService.SaveFileAsync(SelectedFile, fileName);
+                SelectedTile.ImageUrl = fileName;
+            }
+            catch
+            {
+                return;
+            }
+        }
+
+
+        
+
+       
+       
+       
+       
+
+       
+        
         private string CreateHtmlSingleTile(Tile tile)
         {
             string imgPath = "img";
@@ -385,62 +527,8 @@ namespace LinkListCreator
             return htmlBuilder.ToString();
         }
 
-        private async Task UpdateAllCssVariables()
-        {
-            await JSRuntime.InvokeVoidAsync("updateCssVariable", "--main-bg-color", Settings.SelectedMainBgColor);
-            await JSRuntime.InvokeVoidAsync("updateCssVariable", "--tile-bg-color", Settings.SelectedTileBgColor);
-            await JSRuntime.InvokeVoidAsync("updateCssVariable", "--tile-bg-hover-color", Settings.SelectedTileBgHoverColor);
-            await JSRuntime.InvokeVoidAsync("updateCssVariable", "--link-bg-color", Settings.SelectedLinkBgColor);
-            await JSRuntime.InvokeVoidAsync("updateCssVariable", "--link-bg-hover-color", Settings.SelectedLinkBgHoverColor);
-            await JSRuntime.InvokeVoidAsync("updateCssVariable", "--button-bg-color", Settings.SelectedButtonBgColor);
-            await JSRuntime.InvokeVoidAsync("updateCssVariable", "--link-text-color", Settings.SelectedLinkTextColor);
-        }
 
-        private async Task UpdateCssVariables(string value, ChangeEventArgs e)
-        {
-            if (e.Value == null) { return; }
 
-            switch (value)
-            {
-                case "--main-bg-color":
-                    Settings.SelectedMainBgColor = e.Value.ToString();
-                    await JSRuntime.InvokeVoidAsync("updateCssVariable", "--main-bg-color", Settings.SelectedMainBgColor);
-                    break;
-                case "--tile-bg-color":
-                    Settings.SelectedTileBgColor = e.Value.ToString();
-                    await JSRuntime.InvokeVoidAsync("updateCssVariable", "--tile-bg-color", Settings.SelectedTileBgColor);
-                    break;
-                case "--tile-bg-hover-color":
-                    Settings.SelectedTileBgHoverColor = e.Value.ToString();
-                    await JSRuntime.InvokeVoidAsync("updateCssVariable", "--tile-bg-hover-color", Settings.SelectedTileBgHoverColor);
-                    break;
-                case "--link-bg-color":
-                    Settings.SelectedLinkBgColor = e.Value.ToString();
-                    await JSRuntime.InvokeVoidAsync("updateCssVariable", "--link-bg-color", Settings.SelectedLinkBgColor);
-                    break;
-                case "--link-bg-hover-color":
-                    Settings.SelectedLinkBgHoverColor = e.Value.ToString();
-                    await JSRuntime.InvokeVoidAsync("updateCssVariable", "--link-bg-hover-color", Settings.SelectedLinkBgHoverColor);
-                    break;
-                case "--button-bg-color":
-                    Settings.SelectedButtonBgColor = e.Value.ToString();
-                    await JSRuntime.InvokeVoidAsync("updateCssVariable", "--button-bg-color", Settings.SelectedButtonBgColor);
-                    break;
-                case "--link-text-color":
-                    Settings.SelectedLinkTextColor = e.Value.ToString();
-                    await JSRuntime.InvokeVoidAsync("updateCssVariable", "--link-text-color", Settings.SelectedLinkTextColor);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        protected override void OnInitialized()
-        {
-            base.OnInitialized();
-
-            Seed();
-        }
 
         public void SelectTile(Tile tile)
         {
@@ -521,99 +609,6 @@ namespace LinkListCreator
         }
 
 
-        public void Seed()
-        {
-            Tiles.AddRange(new List<Tile>()
-            {
-                 new() {
-                    Title = "Google",
-                    Type = TileType.Multi,
-                    Url = "https://www.google.com",
-                    ImageUrl = "google_search.png",
-                    Links = new List<Link>()
-                    {
-                        new() {
-                            Title = "Search",
-                            Url = "https://www.google.com"
-                        },
-                        new() {
-                            Title = "Contacts",
-                            Url = "https://contacts.google.com"
-                        },
-                        new() {
-                            Title = "Drive",
-                            Url = "https://drive.google.com"
-                        },
-                        new() {
-                            Title = "Maps",
-                            Url = "https://maps.google.com"
-                        },
-                        new() {
-                            Title = "Calendar",
-                            Url = "https://calendar.google.com"
-                        }
-                    }
-                },
-                new() {
-                    Title = "Streaming",
-                    Type = TileType.Multi,
-                    Url = "https://www.netflix.com",
-                    ImageUrl = "streaming.png",
-                    Links = new List<Link>()
-                    {
-                        new() {
-                            Title = "Netflix",
-                            Url = "https://www.netflix.com"
-                        },
-                        new() {
-                            Title = "YouTube",
-                            Url = "https://www.youtube.com"
-                        },
-                        new() {
-                            Title = "Disney+",
-                            Url = "https://www.disneyplus.com"
-                        }
-                    }
-                },
-                new() {
-                    Title = "Wikipedia",
-                    Type = TileType.Single,
-                    Url = "https://de.wikipedia.org",
-                    ImageUrl = "wikipedia.png",
-                    Links = new List<Link>()
-                },
-                new() {
-                    Title = "ChatGPT",
-                    Type = TileType.Single,
-                    Url = "https://chat.com",
-                    ImageUrl = "openai.png",
-                    BorderRadiusActive = true,
-                    BorderRadiusPercentage = "10",
-                    Links = new List<Link>()
-                },
-                new() {
-                    Title = "Translate",
-                    Type = TileType.Multi,
-                    Url = "https://www.deepl.com/de/translator",
-                    ImageUrl = "translate.png",
-                    Links = new List<Link>()
-                    {
-                        new() {
-                            Title = "DeepL",
-                            Url = "https://www.deepl.com/de/translator"
-                        },
-                        new() {
-                            Title = "Google Translate",
-                            Url = "https://translate.google.com/"
-                        },
-                        new() {
-                            Title = "leo.org",
-                            Url = "https://www.leo.org/englisch-deutsch"
-                        }
-                    }
-                }
-            });
-        }
 
     }
 }
