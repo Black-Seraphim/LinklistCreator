@@ -2,10 +2,10 @@
 The Linklist Creator is used to automatically create a link list. 
 
 You can find an example of a link list here: 
-https://www.hetfeld.de/Linklist/sample/
+https://www.hetfeld.name/Linklist/sample/
 
 You can either compile the finished program yourself or download it here:
-https://www.hetfeld.de/Linklist/LinklistCreator.7z
+https://www.hetfeld.name/Linklist/LinklistCreator.7z
 
 ## Usage
 The app starts with a predefined default link list.
