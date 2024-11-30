@@ -2,16 +2,11 @@
 using AngleSharp.Css;
 using AngleSharp.Html.Parser;
 using AngleSharp.Html;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AngleSharp.Html.Dom;
 using AngleSharp.Css.Dom;
 
-namespace LinkListCreator.Services
+namespace LinkListCreator.Tools
 {
     internal static class Prettify
     {

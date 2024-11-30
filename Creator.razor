@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Components.Forms
 
 <main>
+
     <button class="button-nav" @onclick="ButtonMenu_OnClick">
         @if (MenuVisibility == "hidden")
         {
@@ -37,7 +38,7 @@
                     {
                         @foreach (Tile tile in Tiles)
                         {
-                            <tr class="@((tile == SelectedTile) ? "row-selected" : "")" @onclick="() => SelectTile(tile)"><td>@tile.Title</td></tr>
+                            <tr class="@((tile == SelectedTile) ? "row-selected" : "")" @onclick="() => RowTile_OnClick(tile)"><td>@tile.Title</td></tr>
                         }
                     }
                 </tbody>
@@ -47,9 +48,9 @@
         <div class="buttons">
             @if (SelectedTile != null)
             {
-                <button @onclick="RemoveTile">Remove</button>
+                <button @onclick="ButtonRemoveTile_OnClick">Remove</button>
             }
-            <button @onclick="AddTile">Add</button>
+            <button @onclick="ButtonAddTile_OnClick">Add</button>
         </div>
     </div>
 
@@ -66,7 +67,7 @@
                         {
                             @foreach (Link link in Links)
                             {
-                                <tr class="@((link == SelectedLink) ? "row-selected" : "")" @onclick="() => SelectLink(link)"><td>@link.Title</td></tr>
+                                <tr class="@((link == SelectedLink) ? "row-selected" : "")" @onclick="() => RowLink_OnSelect(link)"><td>@link.Title</td></tr>
                             }
                         }
                     </tbody>
@@ -76,10 +77,10 @@
             <div class="buttons">
                 @if (SelectedLink != null)
                 {
-                    <button @onclick="RemoveLink">Remove</button>
+                    <button @onclick="ButtonRemoveLink_OnClick">Remove</button>
                 }
 
-                <button @onclick="AddLink">Add</button>
+                <button @onclick="ButtonAddLink_OnClick">Add</button>
 
             </div>
         }
@@ -112,7 +113,7 @@
 
                 <div class="input-file">
                     <label>Image</label>
-                    <InputFile id="fileInput" class="file-input" OnChange="OnFileSelected" />
+                    <InputFile id="fileInput" class="file-input" OnChange="InputFileImage_OnChange" />
 
                 </div>
 
@@ -218,8 +219,7 @@
                             }
                             else
                             {
-                                <img style="@(SelectedTile.BorderRadiusActive ? $"border-radius: {SelectedTile.BorderRadiusPercentage}%;" : "")" src="@GetTileImage()" alt="Phoenix">
-
+                                <img src="@GetTileImage()" alt="@SelectedTile.ImageUrl" style="@(SelectedTile.BorderRadiusActive ? $"border-radius: {SelectedTile.BorderRadiusPercentage}%;" : "")">
                             }
                         </div>
                     </a>
@@ -248,12 +248,4 @@
 
     </div>
 
-
 </main>
-
-
-
-@code {
-
-
-}

@@ -1,27 +1,15 @@
 ﻿using LinkListCreator.Model;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using LinkListCreator.Services;
 using System.IO;
 using Microsoft.JSInterop;
-using Microsoft.Extensions.Logging;
-using System.Net.Http.Json;
 using System.Text.Json;
 using System.IO.Compression;
 using System.Diagnostics;
 using System.Globalization;
-using AngleSharp.Html.Parser;
-using AngleSharp.Html;
-using AngleSharp.Css.Parser;
-using AngleSharp.Html.Dom;
-using AngleSharp.Io;
-using AngleSharp;
-using AngleSharp.Css;
+using LinkListCreator.Tools;
 
 namespace LinkListCreator
 {
@@ -41,6 +29,7 @@ namespace LinkListCreator
         public List<Link> Links { get; set; } = new();
         public Tile? SelectedTile { get; set; }
         public Link? SelectedLink { get; set; }
+        private IBrowserFile? SelectedFile { get; set; }
 
         public string TileOptionsVisibility { get; set; } = "";
         public string LinkOptionsVisibility { get; set; } = "hidden";
@@ -49,10 +38,9 @@ namespace LinkListCreator
         public string AddLinkVisibility { get; set; } = "hidden";
         public string MenuVisibility { get; set; } = "hidden";
 
-
-        private ElementReference? InputFileRef { get; set; }
-        private IBrowserFile? SelectedFile { get; set; }
-
+        /// <summary>
+        /// On component initialization, the tiles are seeded.
+        /// </summary>
         protected override void OnInitialized()
         {
             base.OnInitialized();
@@ -68,36 +56,36 @@ namespace LinkListCreator
         /// <returns></returns>
         private async Task UpdateCssVariable(string value, ChangeEventArgs e)
         {
-            if (e.Value == null) { return; }
+            if (e.Value is not string stringValue) { return; }
 
             switch (value)
             {
                 case "--main-bg-color":
-                    Settings.SelectedMainBgColor = e.Value.ToString();
+                    Settings.SelectedMainBgColor = stringValue;
                     await JSRuntime.InvokeVoidAsync("updateCssVariable", "--main-bg-color", Settings.SelectedMainBgColor);
                     break;
                 case "--tile-bg-color":
-                    Settings.SelectedTileBgColor = e.Value.ToString();
+                    Settings.SelectedTileBgColor = stringValue;
                     await JSRuntime.InvokeVoidAsync("updateCssVariable", "--tile-bg-color", Settings.SelectedTileBgColor);
                     break;
                 case "--tile-bg-hover-color":
-                    Settings.SelectedTileBgHoverColor = e.Value.ToString();
+                    Settings.SelectedTileBgHoverColor = stringValue;
                     await JSRuntime.InvokeVoidAsync("updateCssVariable", "--tile-bg-hover-color", Settings.SelectedTileBgHoverColor);
                     break;
                 case "--link-bg-color":
-                    Settings.SelectedLinkBgColor = e.Value.ToString();
+                    Settings.SelectedLinkBgColor = stringValue;
                     await JSRuntime.InvokeVoidAsync("updateCssVariable", "--link-bg-color", Settings.SelectedLinkBgColor);
                     break;
                 case "--link-bg-hover-color":
-                    Settings.SelectedLinkBgHoverColor = e.Value.ToString();
+                    Settings.SelectedLinkBgHoverColor = stringValue;
                     await JSRuntime.InvokeVoidAsync("updateCssVariable", "--link-bg-hover-color", Settings.SelectedLinkBgHoverColor);
                     break;
                 case "--button-bg-color":
-                    Settings.SelectedButtonBgColor = e.Value.ToString();
+                    Settings.SelectedButtonBgColor = stringValue;
                     await JSRuntime.InvokeVoidAsync("updateCssVariable", "--button-bg-color", Settings.SelectedButtonBgColor);
                     break;
                 case "--link-text-color":
-                    Settings.SelectedLinkTextColor = e.Value.ToString();
+                    Settings.SelectedLinkTextColor = stringValue;
                     await JSRuntime.InvokeVoidAsync("updateCssVariable", "--link-text-color", Settings.SelectedLinkTextColor);
                     break;
                 default:
@@ -387,11 +375,14 @@ namespace LinkListCreator
             return cssBuilder.ToString();
         }
 
+        /// <summary>
+        /// Create the HTML string for the linklist.
+        /// </summary>
+        /// <returns></returns>
         private string CreateHtmlLinklist()
         {
-            string nameLower = Settings.LinklistName.ToLower();
             string defaultCssPath = "css/styles.css";
-            string linklistCssPath = $"css/{nameLower}.css";
+            string linklistCssPath = $"css/{Settings.LinklistName.ToLower()}.css";
 
             StringBuilder htmlBuilder = new();
 
@@ -408,6 +399,7 @@ namespace LinkListCreator
             htmlBuilder.AppendLine($"");
             htmlBuilder.AppendLine($"<body>");
             htmlBuilder.AppendLine($"");
+
             foreach (Tile tile in Tiles)
             {
                 if (tile.Type == TileType.Single)
@@ -419,6 +411,7 @@ namespace LinkListCreator
                     htmlBuilder.AppendLine(CreateHtmlMultiTile(tile));
                 }
             }
+
             htmlBuilder.AppendLine($"");
             htmlBuilder.AppendLine($"</body>");
             htmlBuilder.AppendLine($"");
@@ -428,52 +421,12 @@ namespace LinkListCreator
             return htmlBuilder.ToString();
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        private async Task OnFileSelected(InputFileChangeEventArgs e)
-        {
-            SelectedFile = e.File;
-
-            if (SelectedFile == null) return;
-
-            if (SelectedTile == null) return;
-
-            try
-            {
-                string fileName = $"{SelectedFile.Name}";
-                await FileUploadService.SaveFileAsync(SelectedFile, fileName);
-                SelectedTile.ImageUrl = fileName;
-            }
-            catch
-            {
-                return;
-            }
-        }
-
-
-        
-
-       
-       
-       
-       
-
-       
-        
-        private string CreateHtmlSingleTile(Tile tile)
+        /// <summary>
+        /// Create the HTML string for a single tile.
+        /// </summary>
+        /// <param name="tile">tile to create html from</param>
+        /// <returns>html tile string</returns>
+        private static string CreateHtmlSingleTile(Tile tile)
         {
             string imgPath = "img";
             string imgUrl = (string.IsNullOrEmpty(tile.ImageUrl)) ? "phoenix.png" : tile.ImageUrl;
@@ -491,7 +444,12 @@ namespace LinkListCreator
             return htmlBuilder.ToString();
         }
 
-        private string CreateHtmlMultiTile(Tile tile)
+        /// <summary>
+        /// Create the HTML string for a multi tile.
+        /// </summary>
+        /// <param name="tile"></param>
+        /// <returns></returns>
+        private static string CreateHtmlMultiTile(Tile tile)
         {
             string imgPath = "img";
             string imgUrl = (string.IsNullOrEmpty(tile.ImageUrl)) ? "phoenix.png" : tile.ImageUrl;
@@ -527,34 +485,71 @@ namespace LinkListCreator
             return htmlBuilder.ToString();
         }
 
+        /// <summary>
+        /// On tile click, the tile is selected.
+        /// </summary>
+        /// <param name="tile">tile to select</param>
+        public void RowTile_OnClick(Tile tile)
+        {
+            SelectTile(tile);
+        }
 
-
-
+        /// <summary>
+        /// Select the tile, update the links, and show the tile options.
+        /// Unslect the link and hide the link options.
+        /// </summary>
+        /// <param name="tile">tile to select</param>
         public void SelectTile(Tile tile)
         {
-            SelectedLink = null;
             SelectedTile = tile;
             Links = SelectedTile.Links;
-
             TileOptionsVisibility = "";
+
+            SelectedLink = null;
             LinkOptionsVisibility = "hidden";
         }
 
+        /// <summary>
+        /// On link click, the link is selected.
+        /// </summary>
+        /// <param name="link">link to select</param>
+        public void RowLink_OnSelect(Link link)
+        {
+            SelectLink(link);
+        }
+
+        /// <summary>
+        /// Select the link and show the link options.
+        /// Hide the tile options.
+        /// </summary>
+        /// <param name="link"></param>
         public void SelectLink(Link link)
         {
             SelectedLink = link;
-            TileOptionsVisibility = "hidden";
             LinkOptionsVisibility = "";
+
+            TileOptionsVisibility = "hidden";
         }
 
-        public void AddTile()
+        /// <summary>
+        /// On button click, a new tile is added to the linklist.
+        /// </summary>
+        public void ButtonAddTile_OnClick()
+        {
+            AddTile();
+        }
+
+        /// <summary>
+        /// Add a new tile to the linklist.
+        /// Select the new tile.
+        /// </summary>
+        private void AddTile()
         {
             Tile tile = new()
             {
                 Title = "New Tile",
                 Type = TileType.Single,
                 Url = "#",
-                Order = Tiles.Count + 1,
                 Links = new()
             };
 
@@ -562,6 +557,19 @@ namespace LinkListCreator
             SelectTile(tile);
         }
 
+        /// <summary>
+        /// On button click, the selected tile is removed from the linklist.
+        /// </summary>
+        public void ButtonRemoveTile_OnClick()
+        {
+            RemoveTile();
+        }
+
+        /// <summary>
+        /// If a tile is selected, the tile is removed from the linklist.
+        /// Selected tile is set to null.
+        /// Links are reset.
+        /// </summary>
         public void RemoveTile()
         {
             if (SelectedTile == null) { return; }
@@ -570,22 +578,44 @@ namespace LinkListCreator
 
             SelectedTile = null;
             Links = new();
-
         }
 
+        /// <summary>
+        /// On button click, a new link is added to the selected tile.
+        /// </summary>
+        public void ButtonAddLink_OnClick()
+        {
+            AddLink();
+        }
+
+        /// <summary>
+        /// Add a new link to the selected tile.
+        /// Select the new link.
+        /// </summary>
         public void AddLink()
         {
             Link link = new()
             {
                 Title = "New Link",
                 Url = "#",
-                Order = Links.Count + 1
             };
 
             Links.Add(link);
             SelectLink(link);
         }
 
+        /// <summary>
+        /// On button click, the selected link is removed from the selected tile.
+        /// </summary>
+        public void ButtonRemoveLink_OnClick()
+        {
+            RemoveLink();
+        }
+
+        /// <summary>
+        /// If a link is selected, the link is removed from the selected tile.
+        /// Selected link is set to null.
+        /// </summary>
         public void RemoveLink()
         {
             if (SelectedLink == null) { return; }
@@ -595,6 +625,10 @@ namespace LinkListCreator
             SelectedLink = null;
         }
 
+        /// <summary>
+        /// Get the image path for the selected tile.
+        /// </summary>
+        /// <returns>image path string</returns>
         public string GetTileImage()
         {
             string phoenixPath = Path.Combine("images", "phoenix.png");
@@ -608,7 +642,29 @@ namespace LinkListCreator
             return phoenixPath;
         }
 
+        /// <summary>
+        /// On input file change, the selected file is uploaded and the image path is updated.
+        /// </summary>
+        /// <param name="e">event that contains the selected file</param>
+        /// <returns></returns>
+        private async Task InputFileImage_OnChange(InputFileChangeEventArgs e)
+        {
+            SelectedFile = e.File;
 
+            if (SelectedFile == null) return;
 
+            if (SelectedTile == null) return;
+
+            try
+            {
+                string fileName = $"{SelectedFile.Name}";
+                await FileUploadService.SaveFileAsync(SelectedFile, fileName);
+                SelectedTile.ImageUrl = fileName;
+            }
+            catch
+            {
+                return;
+            }
+        }
     }
 }

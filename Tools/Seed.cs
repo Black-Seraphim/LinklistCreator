@@ -1,11 +1,6 @@
 ﻿using LinkListCreator.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace LinkListCreator.Services
+namespace LinkListCreator.Tools
 {
     internal static class Seed
     {
