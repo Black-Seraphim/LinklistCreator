@@ -32,3 +32,6 @@ The hamburger menu at the top left gives you the option to save the current conf
 ## Architecture
 The app uses Blazor within a WPF frame.
 .NET Core 9.0 is used
+
+### Model
+![screenshot](Model/Model.png)
