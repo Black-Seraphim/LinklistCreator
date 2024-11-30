@@ -10,6 +10,5 @@ namespace LinkListCreator.Model
     {
         public string Title { get; set; } = string.Empty;
         public string Url { get; set; } = string.Empty;
-        public int Order { get; set; }
     }
 }

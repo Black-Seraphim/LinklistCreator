@@ -43,8 +43,6 @@ namespace LinkListCreator
         /// </summary>
         protected override void OnInitialized()
         {
-            base.OnInitialized();
-
             Tiles = Seed.SeedTiles();
         }
 

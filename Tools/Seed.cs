@@ -74,7 +74,7 @@ namespace LinkListCreator.Tools
                     Url = "https://chat.com",
                     ImageUrl = "openai.png",
                     BorderRadiusActive = true,
-                    BorderRadiusPercentage = "10",
+                    BorderRadiusPercentage = 10,
                     Links = new List<Link>()
                 },
                 new() {

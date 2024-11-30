@@ -14,7 +14,6 @@ namespace LinkListCreator.Model
         public List<Link> Links { get; set; } = new();
         public string ImageUrl { get; set; } = string.Empty;
         public bool BorderRadiusActive { get; set; } = false;
-        public string BorderRadiusPercentage { get; set; } = "10";
-        public int Order { get; set; }
+        public int BorderRadiusPercentage { get; set; } = 10;
     }
 }
