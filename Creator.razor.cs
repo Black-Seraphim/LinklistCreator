@@ -332,7 +332,7 @@ namespace LinkListCreator
             cssBuilder.AppendLine($"--link-bg-color: {Settings.SelectedLinkBgColor};");
             cssBuilder.AppendLine($"--link-bg-hover-color: {Settings.SelectedLinkBgHoverColor};");
             cssBuilder.AppendLine($"--button-bg-color: {Settings.SelectedButtonBgColor};");
-            cssBuilder.AppendLine($"--tile-width: {Settings.TileWidthPx}rem;");
+            cssBuilder.AppendLine($"--tile-width: {(Settings.TileWidthPx / 10.0).ToString(cultureInfo)}rem;");
             cssBuilder.AppendLine($"");
 
             cssBuilder.AppendLine($"--tile-shadow-color-hover: #000000;");

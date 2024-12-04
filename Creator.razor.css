@@ -4,11 +4,9 @@
     box-sizing: border-box;
 }
 
-
 html {
     font-size: 6.25%;
 }
-
 
 body {
     color: var( --link-text-color);
@@ -104,21 +102,23 @@ main {
         }
 
         > .table {
-            display: flex;
-            align-items: start;
-                            font-size: 22px;
-
-            width: 100%;
+            display: block;
+            font-size: 22px;
+            overflow-y: auto;
+            padding: 5px;
             height: 600px;
             color: var(--link-text-color);
+
             > table {
                 width: 100%;
                 background-color: var(--link-bg-color);
-                margin: 5px;
+                table-layout: auto;
+
                 border-collapse: collapse;
                 > tbody {
+
                     tr {
-                        height: calc(var(--main-width) / 24);
+                           height: auto;
                         &:hover {
                             background-color: var(--title-bg-hover-color);
                         }
@@ -139,6 +139,7 @@ main {
         .buttons {
             display: flex;
             justify-content: space-evenly;
+            margin-top: 10px;
             > button {
                 width: 130px;
                 height: 50px;

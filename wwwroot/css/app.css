@@ -33,7 +33,7 @@
 }
 
 html {
-    font-size: 6.25%;
+    font-size: 62.5%;
 }
 
 body {
@@ -43,7 +43,7 @@ body {
     font-family: 'Roboto', sans-serif;
     font-weight: normal;
     font-style: normal;
-    font-size: 16rem;
+    font-size: 1.6rem;
 }
 
 .valid.modified:not([type=checkbox]) {
