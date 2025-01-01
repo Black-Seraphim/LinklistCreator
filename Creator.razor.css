@@ -5,11 +5,11 @@
 }
 
 html {
-    font-size: 6.25%;
+    font-size: 62.5%;
 }
 
 body {
-    color: var( --link-text-color);
+    color: var(--link-text-color);
     padding: 0;
     font-family: 'Roboto', sans-serif;
     font-weight: normal;
@@ -35,33 +35,38 @@ main {
         cursor: pointer;
         padding: 5px;
         z-index: 1;
+
         span {
             width: 80%;
             height: 5px;
             background-color: var(--link-text-color);
             border-radius: 5px;
         }
-        > div {
+
+        >div {
             font-size: 30px;
             font-weight: bold;
             color: var(--link-text-color);
         }
     }
 
-    nav{
+    nav {
         position: absolute;
-        width: calc(var(--main-width) / 4);
-        > div {
+        width: calc(var(--main-width) * 0.25);
+
+        >div {
             display: flex;
             align-items: center;
             aspect-ratio: 6 / 1;
             background-color: var(--title-bg-color);
             justify-content: center;
-            > h2 {
+
+            >h2 {
                 color: var(--title-text-color);
                 font-size: 26px;
             }
         }
+
         button {
             width: calc(var(--main-width) / 4);
             aspect-ratio: 6 / 1;
@@ -74,12 +79,13 @@ main {
             text-align: left;
             padding-inline: 10px;
             color: var(--link-text-color);
+
             &:hover {
                 background-color: var(--link-bg-hover-color);
             }
         }
 
-        button + button {
+        button+button {
             border-top: 0;
         }
     }
@@ -88,20 +94,22 @@ main {
         width: calc(var(--main-width) / 4);
         height: 720px;
         float: left;
-        > .title {
+
+        >.title {
             display: flex;
             align-items: center;
             width: 100%;
             aspect-ratio: 6 / 1;
             background-color: var(--title-bg-color);
             justify-content: center;
-            > div {
+
+            >div {
                 color: var(--title-text-color);
                 font-size: 26px;
             }
         }
 
-        > .table {
+        >.table {
             display: block;
             font-size: 22px;
             overflow-y: auto;
@@ -109,19 +117,22 @@ main {
             height: 600px;
             color: var(--link-text-color);
 
-            > table {
+            >table {
                 width: 100%;
                 background-color: var(--link-bg-color);
                 table-layout: auto;
 
                 border-collapse: collapse;
-                > tbody {
+
+                >tbody {
 
                     tr {
-                           height: auto;
+                        height: auto;
+
                         &:hover {
                             background-color: var(--title-bg-hover-color);
                         }
+
                         td {
                             padding-inline: 10px;
                             height: 50px;
@@ -131,7 +142,7 @@ main {
             }
         }
 
-        > .options {
+        >.options {
             width: 100%;
             height: 600px;
         }
@@ -140,7 +151,8 @@ main {
             display: flex;
             justify-content: space-evenly;
             margin-top: 10px;
-            > button {
+
+            >button {
                 width: 130px;
                 height: 50px;
                 border: 0;
@@ -148,12 +160,13 @@ main {
                 color: var(--title-text-color);
                 font-size: 26px;
                 cursor: pointer;
+
                 &:hover {
                     background-color: var(--title-bg-hover-color);
                 }
             }
 
-            > button:only-child {
+            >button:only-child {
                 margin-left: auto;
                 margin-right: 10px;
             }
@@ -170,13 +183,14 @@ main {
     display: flex;
     flex-direction: column;
     padding: 5px;
-    > label {
+
+    >label {
         color: #ffd800;
         display: inline-block;
         font-size: 16px;
     }
 
-    > input {
+    >input {
         height: 30px;
         box-sizing: border-box;
         padding-inline: 5px;
@@ -196,23 +210,24 @@ main {
     display: flex;
     flex-direction: column;
     padding: 5px;
-    > label {
-                    color: #ffd800;
+
+    >label {
+        color: #ffd800;
 
         font-size: 16px;
     }
 
-    > select {
+    >select {
         height: 30px;
         box-sizing: border-box;
         background-color: var(--input-bg-color);
         border: none;
-                font-size: 18px;
+        font-size: 18px;
 
         padding-inline: 5px;
         font-family: 'Roboto', sans-serif;
         color: var(--input-text-color);
-        
+
     }
 }
 
@@ -222,9 +237,10 @@ main {
     flex-direction: column;
     padding: 5px;
     color: #ffd800;
-    > label {
+
+    >label {
         font-size: 16px;
-            color: #ffd800;
+        color: #ffd800;
 
     }
 }
@@ -234,14 +250,15 @@ main {
     height: 30px;
     align-items: center;
     margin: 5px;
-    > label {
-                    color: #ffd800;
+
+    >label {
+        color: #ffd800;
 
         width: 260px;
         font-size: 16px;
     }
 
-    > input {
+    >input {
         width: 30px;
         height: 30px;
         border: 0;
@@ -254,14 +271,15 @@ main {
     height: 30px;
     align-items: center;
     margin: 5px;
+
     label:first-child {
-                              color: #ffd800;
+        color: #ffd800;
 
         width: 230px;
     }
 
-    > input {
-                font-size: 16px;
+    >input {
+        font-size: 16px;
 
         width: 35px;
         height: 30px;
@@ -280,12 +298,14 @@ main {
     height: 30px;
     align-items: center;
     margin: 5px;
-    > label:first-child {
-    color: #ffd800;
+
+    >label:first-child {
+        color: #ffd800;
 
         width: 90%;
         font-size: 16px;
     }
+
     .color-button {
         width: 30px;
         height: 30px;
@@ -298,7 +318,7 @@ main {
     input[type="color"] {
         width: 0px;
         height: 0px;
-        visibility:hidden;
+        visibility: hidden;
     }
 }
 
@@ -311,13 +331,16 @@ main {
     height: 30px;
     align-items: center;
     margin: 5px;
+
     label {
-       color: #ffd800;
-    &:first-child {
-        width: 210px;
+        color: #ffd800;
+
+        &:first-child {
+            width: 210px;
+        }
     }
-                  }
-    > input {
+
+    >input {
         width: 45px;
         height: 30px;
         font-family: 'Roboto', sans-serif;
@@ -337,11 +360,13 @@ main {
     width: 100%;
     aspect-ratio: 1 / 1;
     justify-content: center;
-    > .tile {
+
+    >.tile {
         width: 200px;
         height: 200px;
         border-radius: 10px;
-        > a {
+
+        >a {
             div:first-child {
                 display: flex;
                 justify-content: center;
@@ -351,7 +376,8 @@ main {
                 height: 150px;
                 padding: 10;
                 background-color: var(--tile-bg-color);
-                > img {
+
+                >img {
                     max-width: 90%;
                     max-height: 90%;
                     object-fit: contain;
@@ -360,7 +386,7 @@ main {
         }
 
         &:hover {
-            > a {
+            >a {
                 div:first-child {
                     transition: background-color .2s ease-out;
                     background-color: var(--tile-bg-hover-color);
@@ -368,8 +394,9 @@ main {
             }
         }
 
-        > div {
+        >div {
             height: 50px;
+
             .link {
                 font-size: 22px;
                 display: flex;
@@ -391,7 +418,8 @@ main {
                 display: inline-flex;
                 justify-content: center;
                 align-items: center;
-                > i {
+
+                >i {
                     border-style: solid;
                     border-color: var(--link-text-color);
                     border-width: 0 5px 5px 0;
@@ -410,18 +438,20 @@ main {
                 position: relative;
                 top: -50px;
                 border-radius: 0 0 calc(200 / 20) calc(200 / 20);
-                > ul {
-                    > li {
+
+                >ul {
+                    >li {
                         width: 200px;
                         height: 0;
                         position: relative;
                         background-color: var(--link-bg-color);
                         transition: height .3s ease-out;
                         display: flex;
-                        > a {
+
+                        >a {
                             width: 200px;
                             aspect-ratio: 1 / 4;
-                                            font-size: 22px;
+                            font-size: 22px;
 
                             display: flex;
                             justify-content: center;
@@ -429,11 +459,11 @@ main {
                         }
                     }
 
-                    > li:first-child {
+                    >li:first-child {
                         height: 50px;
                     }
 
-                    > li:last-of-type {
+                    >li:last-of-type {
                         border-radius: 0 0 10px 10px;
                     }
                 }
@@ -445,7 +475,8 @@ main {
                     visibility: visible;
                     box-shadow: 0 0 5rem var(--tile-shadow-color-hover);
                     transition: box-shadow .2s ease-out;
-                    > ul > li {
+
+                    >ul>li {
                         height: 50px;
                     }
                 }
@@ -461,11 +492,11 @@ a:active {
     text-decoration: none;
 }
 
-.dropdown > ul > li :hover {
+.dropdown>ul>li :hover {
     background-color: var(--link-bg-hover-color);
 }
 
-.dropdown > ul > li:last-of-type :hover {
+.dropdown>ul>li:last-of-type :hover {
     border-radius: 0 0 10px 10px;
 }
 

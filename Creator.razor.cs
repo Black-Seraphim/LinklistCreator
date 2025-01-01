@@ -424,16 +424,18 @@ namespace LinkListCreator
         /// </summary>
         /// <param name="tile">tile to create html from</param>
         /// <returns>html tile string</returns>
-        private static string CreateHtmlSingleTile(Tile tile)
+        private string CreateHtmlSingleTile(Tile tile)
         {
             string imgPath = "img";
             string imgUrl = (string.IsNullOrEmpty(tile.ImageUrl)) ? "phoenix.png" : tile.ImageUrl;
             string fullImgUrl = Path.Combine(imgPath, imgUrl);
 
+            string target = Settings.OpenInNewWindow ? " target=\"_blank\"" : "";
+
             StringBuilder htmlBuilder = new();
 
             htmlBuilder.AppendLine($"<div class=\"tile single tile-{tile.Title.ToLower()}\">");
-            htmlBuilder.AppendLine($"<a href=\"{tile.Url}\">");
+            htmlBuilder.AppendLine($"<a href=\"{tile.Url}\"{target}>");
             htmlBuilder.AppendLine($"<div><img src=\"{fullImgUrl}\" alt=\"{tile.ImageUrl}\"></div>");
             htmlBuilder.AppendLine($"<div><span>{tile.Title}</span></div>");
             htmlBuilder.AppendLine($"</a>");
@@ -447,16 +449,18 @@ namespace LinkListCreator
         /// </summary>
         /// <param name="tile"></param>
         /// <returns></returns>
-        private static string CreateHtmlMultiTile(Tile tile)
+        private string CreateHtmlMultiTile(Tile tile)
         {
             string imgPath = "img";
             string imgUrl = (string.IsNullOrEmpty(tile.ImageUrl)) ? "phoenix.png" : tile.ImageUrl;
             string fullImgUrl = Path.Combine(imgPath, imgUrl);
 
+            string target = Settings.OpenInNewWindow ? " target=\"_blank\"" : "";
+
             StringBuilder htmlBuilder = new();
 
             htmlBuilder.AppendLine($"<div class=\"tile multi tile-{tile.Title.ToLower()}\">");
-            htmlBuilder.AppendLine($"<a href=\"{tile.Url}\">");
+            htmlBuilder.AppendLine($"<a href=\"{tile.Url}\"{target}>");
             htmlBuilder.AppendLine($"<div><img src=\"{fullImgUrl}\" alt=\"{tile.ImageUrl}\"></div>");
             htmlBuilder.AppendLine($"</a>");
             htmlBuilder.AppendLine($"");
@@ -473,7 +477,7 @@ namespace LinkListCreator
             htmlBuilder.AppendLine($"<ul>");
             foreach (Link link in tile.Links)
             {
-                htmlBuilder.AppendLine($"<li><a href=\"{link.Url}\"><span>{link.Title}</span></a></li>");
+                htmlBuilder.AppendLine($"<li><a href=\"{link.Url}\"{target}><span>{link.Title}</span></a></li>");
             }
             htmlBuilder.AppendLine($"</ul>");
             htmlBuilder.AppendLine($"</div>");

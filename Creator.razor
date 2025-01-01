@@ -26,7 +26,6 @@
         <button @onclick="ButtonCreate_OnClick">Create Page...</button>
     </nav>
 
-
     <div class="menu tiles">
         <div class="title">
             <div>Tiles</div>
@@ -209,6 +208,11 @@
                 <label>px</label>
             </div>
 
+            <div class="input-checkbox">
+                <label for="border-radius">Open link in new window</label>
+                <input id="border-radius" type="checkbox" @bind="Settings.OpenInNewWindow" />
+            </div>
+
             <div class="tile-visualization">
                 <div class="tile">
                     <a href="#">
@@ -243,7 +247,7 @@
                     </div>
                 </div>
             </div>
-
+          
         </div>
 
     </div>

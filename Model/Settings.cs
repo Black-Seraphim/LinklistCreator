@@ -17,5 +17,6 @@ namespace LinkListCreator.Model
         public string SelectedButtonBgColor { get; set; } = "#303030";
         public string SelectedLinkTextColor { get; set; } = "#a0a0a0";
         public int TileWidthPx { get; set; } = 200;
+        public bool OpenInNewWindow { get; set; } = false;
     }
 }
