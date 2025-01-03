@@ -344,19 +344,20 @@ namespace LinkListCreator
 
             cssBuilder.AppendLine($"@media (max-width: 100em){{");
             cssBuilder.AppendLine($"body{{");
-            cssBuilder.AppendLine($"--tile-width: {(Settings.TileWidthPx * (3.0 / 4)).ToString(cultureInfo)}rem;");
+            cssBuilder.AppendLine($"--tile-width: {(Settings.TileWidthPx * 0.075).ToString(cultureInfo)}rem;");
             cssBuilder.AppendLine($"}}");
             cssBuilder.AppendLine($"}}");
 
             cssBuilder.AppendLine($"@media (max-width: 75em){{");
             cssBuilder.AppendLine($"body{{");
-            cssBuilder.AppendLine($"--tile-width: {(Settings.TileWidthPx * 0.625).ToString(cultureInfo)}rem;");
+            cssBuilder.AppendLine($"--tile-width: {(Settings.TileWidthPx * 0.0625).ToString(cultureInfo)}rem;");
             cssBuilder.AppendLine($"}}");
             cssBuilder.AppendLine($"}}");
 
             cssBuilder.AppendLine($"@media (max-width: 45em){{");
             cssBuilder.AppendLine($"body{{");
-            cssBuilder.AppendLine($"--tile-width: {(Settings.TileWidthPx * 0.575).ToString(cultureInfo)}rem;");
+            cssBuilder.AppendLine($"--tile-width: 30vw;");
+            //cssBuilder.AppendLine($"--tile-width: {(Settings.TileWidthPx * 0.0575).ToString(cultureInfo)}rem;");
             cssBuilder.AppendLine($"}}");
             cssBuilder.AppendLine($"}}");
 
